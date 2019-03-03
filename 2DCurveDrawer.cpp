@@ -78,7 +78,7 @@ void CurveDrawer2D::paintEvent(QPaintEvent *event)
 
     for(CubicBezierCurve& curve : this->curves){
 
-        curve.draw(painter, *event, linepen, cpolygonpen, brush, 15);
+        curve.draw(painter, *event, linepen, cpolygonpen, brush, 15, false);
 
     }
 

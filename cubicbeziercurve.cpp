@@ -56,7 +56,7 @@ void CubicBezierCurve::setControlPoint2(const QPointF& controlPoint){
 
 }
 
-void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const QPen& pen,const QPen& cpolypen, const QBrush& background, int numberOfSamples) const{
+void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const QPen& pen,const QPen& cpolypen, const QBrush& background, int numberOfSamples, bool showControlPolygon) const{
 
 
     qfloat16 increment = 1.0f/(numberOfSamples-1);
@@ -68,13 +68,17 @@ void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const Q
 
     qfloat16 parameter = increment;
 
-    painter.drawLine(startPoint,controlPoint1);
-    painter.drawLine(controlPoint1,controlPoint2);
-    painter.drawLine(controlPoint2,endPoint);
+    if(showControlPolygon){
 
+        painter.drawLine(startPoint,controlPoint1);
+        painter.drawLine(controlPoint1,controlPoint2);
+        painter.drawLine(controlPoint2,endPoint);
+
+        painter.drawEllipse(controlPoint1,4.0,4.0);
+        painter.drawEllipse(controlPoint2,4.0,4.0);
+
+    }
     painter.drawEllipse(startPoint,4.0,4.0);
-    painter.drawEllipse(controlPoint1,4.0,4.0);
-    painter.drawEllipse(controlPoint2,4.0,4.0);
     painter.drawEllipse(endPoint,4.0,4.0);
 
     painter.setPen(pen);

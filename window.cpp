@@ -5,19 +5,43 @@
 #include <QLabel>
 #include <QTimer>
 
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#define NANOSVG_IMPLEMENTATION
+#include "nanosvg.h"
+
 Window::Window()
 {
     setWindowTitle(tr("DrawModel"));
 
     CurveDrawer2D *openGL = new CurveDrawer2D(this);
 
-    QPointF start(100,100);
-    QPointF cp1(200,200);
-    QPointF cp2(200,300);
-    QPointF end(100,400);
+    struct NSVGimage* image;
+    image = nsvgParseFromFile("/home/ferenc/Documents/camera.svg", "px", 96);
 
-    CubicBezierCurve bez(start,cp1,cp2,end);
-    openGL->addCurve(bez);
+    if(image == nullptr)
+        throw std::exception();
+
+    for (NSVGshape* shape = image->shapes; shape != nullptr; shape = shape->next) {
+        for (NSVGpath* path = shape->paths; path != NULL; path = path->next) {
+            for (int i = 0; i < path->npts-1; i += 3) {
+                float* p = &path->pts[i*2];
+
+                QPointF start(p[0], p[1]);
+                QPointF cp1(p[2], p[3]);
+                QPointF cp2(p[4], p[5]);
+                QPointF end(p[6], p[7]);
+
+                CubicBezierCurve bez(start,cp1,cp2,end);
+                openGL->addCurve(bez);
+            }
+        }
+    }
+
+    nsvgDelete(image);
+
+
 
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(openGL, 0, 0);

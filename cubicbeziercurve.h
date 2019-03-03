@@ -27,7 +27,7 @@ class CubicBezierCurve final
         void setControlPoint1(const QPointF& controlPoint);
         void setControlPoint2(const QPointF& controlPoint);
 
-        void draw(QPainter& painter, const QPaintEvent& event, const QPen& pen,const QPen& cpolypen, const QBrush& background, int numberOfSamples) const;
+        void draw(QPainter& painter, const QPaintEvent& event, const QPen& pen,const QPen& cpolypen, const QBrush& background, int numberOfSamples, bool showControlPolygon) const;
         QPointF calculatePoint(const qfloat16& param) const;
         virtual ~CubicBezierCurve(){}
 
