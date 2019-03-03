@@ -51,8 +51,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "helper.h"
-
 #include <QWidget>
 
 //! [0]
@@ -64,7 +62,6 @@ public:
     Window();
 
 private:
-    Helper helper;
 };
 //! [0]
 

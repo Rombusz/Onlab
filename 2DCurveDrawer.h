@@ -73,7 +73,6 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 private:
     QVector<CubicBezierCurve> curves;
-    int elapsed;
 };
 //! [0]
 

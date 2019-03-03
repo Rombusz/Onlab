@@ -5,7 +5,6 @@
 #include <QLabel>
 #include <QTimer>
 
-//! [0]
 Window::Window()
 {
     setWindowTitle(tr("DrawModel"));

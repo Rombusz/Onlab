@@ -57,7 +57,6 @@
 CurveDrawer2D::CurveDrawer2D(QWidget *parent)
     :QOpenGLWidget(parent),curves()
 {
-    elapsed = 0;
     setMinimumSize(500,500);
     setAutoFillBackground(false);
 }
