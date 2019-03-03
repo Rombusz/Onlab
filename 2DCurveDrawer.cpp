@@ -55,7 +55,7 @@
 #include <QTimer>
 
 CurveDrawer2D::CurveDrawer2D(QWidget *parent)
-    :QOpenGLWidget(parent),curves()
+    :QOpenGLWidget(parent),curves(),isControlPolygonVisible(false)
 {
     setMinimumSize(500,500);
     setAutoFillBackground(false);
@@ -74,11 +74,13 @@ void CurveDrawer2D::paintEvent(QPaintEvent *event)
 
     QPen linepen(Qt::green,3.0,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin);
     QPen cpolygonpen(Qt::gray);
-    QBrush brush(Qt::black);
+    QBrush brush(Qt::white);
+
+    painter.fillRect(event->rect(),brush);
 
     for(CubicBezierCurve& curve : this->curves){
 
-        curve.draw(painter, *event, linepen, cpolygonpen, brush, 15, false);
+        curve.draw(painter, *event, linepen, cpolygonpen, brush, 15, isControlPolygonVisible);
 
     }
 
@@ -91,3 +93,13 @@ void CurveDrawer2D::addCurve(const CubicBezierCurve& curve){
 
 }
 
+void CurveDrawer2D::showControlPolygon(){
+
+    this->isControlPolygonVisible = true;
+
+}
+void CurveDrawer2D::hideControlPolygon(){
+
+    this->isControlPolygonVisible = false;
+
+}

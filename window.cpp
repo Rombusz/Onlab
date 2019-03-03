@@ -1,9 +1,4 @@
-#include "2DCurveDrawer.h"
 #include "window.h"
-
-#include <QGridLayout>
-#include <QLabel>
-#include <QTimer>
 
 #include <stdio.h>
 #include <string.h>
@@ -12,10 +7,33 @@
 #include "nanosvg.h"
 
 Window::Window()
+    :curveDrawer(this),
+      openFileButton("Open SVG",this),
+      checkBox(),
+      mainLayout(QBoxLayout::Down),
+      toolLayout(QBoxLayout::LeftToRight),
+      checkBoxLabel("Show Control Polygon")
 {
     setWindowTitle(tr("DrawModel"));
+    openFileButton.connect(&openFileButton,SIGNAL (clicked()), this, SLOT (onFileButtonClick()));
 
-    CurveDrawer2D *openGL = new CurveDrawer2D(this);
+    mainLayout.addWidget(&curveDrawer);
+    toolLayout.addWidget(&openFileButton);
+    toolLayout.addWidget(&checkBoxLabel);
+    toolLayout.addWidget(&checkBox);
+    mainLayout.addLayout(&toolLayout);
+    setLayout(&mainLayout);
+
+    connect(&checkBox, SIGNAL(clicked(bool)),this, SLOT(onCheckBoxStateChange(bool)));
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, &curveDrawer, &CurveDrawer2D::animate);
+    timer->start(50);
+}
+
+void Window::onFileButtonClick(){
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open SVG"), "/home/", tr("SVG Files (*.svg)"));
 
     struct NSVGimage* image;
     image = nsvgParseFromFile("/home/ferenc/Documents/camera.svg", "px", 96);
@@ -34,21 +52,24 @@ Window::Window()
                 QPointF end(p[6], p[7]);
 
                 CubicBezierCurve bez(start,cp1,cp2,end);
-                openGL->addCurve(bez);
+                curveDrawer.addCurve(bez);
             }
         }
     }
 
     nsvgDelete(image);
 
+    this->curveDrawer.update();
 
-
-    QGridLayout *layout = new QGridLayout;
-    layout->addWidget(openGL, 0, 0);
-    setLayout(layout);
-
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, openGL, &CurveDrawer2D::animate);
-    timer->start(50);
 }
+
+void Window::onCheckBoxStateChange(bool checkBoxState){
+
+    if(checkBoxState)this->curveDrawer.showControlPolygon();
+    else this->curveDrawer.hideControlPolygon();
+
+    this->curveDrawer.update();
+
+}
+
 //! [0]

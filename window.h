@@ -52,6 +52,14 @@
 #define WINDOW_H
 
 #include <QWidget>
+#include <2DCurveDrawer.h>
+#include <QGridLayout>
+#include <QBoxLayout>
+#include <QLabel>
+#include <QTimer>
+#include <QFileDialog>
+#include <QPushButton>
+#include <QCheckBox>
 
 //! [0]
 class Window : public QWidget
@@ -62,6 +70,18 @@ public:
     Window();
 
 private:
+
+    CurveDrawer2D curveDrawer;
+    QPushButton openFileButton;
+    QCheckBox checkBox;
+    QBoxLayout mainLayout;
+    QBoxLayout toolLayout;
+    QLabel checkBoxLabel;
+
+private slots:
+    void onFileButtonClick();
+    void onCheckBoxStateChange(bool state);
+
 };
 //! [0]
 

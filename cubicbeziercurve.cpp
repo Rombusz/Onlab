@@ -19,15 +19,12 @@ CubicBezierCurve::CubicBezierCurve(const QPointF& startPoint,const QPointF& cont
 
 }
 
-
 QPointF CubicBezierCurve::calculatePoint(const qfloat16& t) const{
 
     qfloat16 b30 = pow(1-t,3);
     qfloat16 b31 = 3*pow(1-t,2)*t;
     qfloat16 b32 = 3*(1-t)*pow(t,2);
     qfloat16 b33 = pow(t,3);
-
-    std::cout << "B30 " << b30 << " B31 " << b31 << " B32 " << b32 << " B33 " << b33 << std::endl;
 
     return b30*startPoint+b31*controlPoint1+b32*controlPoint2+b33*endPoint;
 
@@ -84,8 +81,6 @@ void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const Q
     painter.setPen(pen);
 
     for(;parameter<1.0f ;parameter+=increment ){
-
-        std::cout << parameter << std::endl;
 
         QPointF segmentStart = this->calculatePoint(parameter-increment);
         QPointF segmentEnd = this->calculatePoint(parameter);

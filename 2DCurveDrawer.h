@@ -65,6 +65,8 @@ class CurveDrawer2D : public QOpenGLWidget
 public:
     CurveDrawer2D(QWidget *parent);
     void addCurve(const CubicBezierCurve&);
+    void showControlPolygon();
+    void hideControlPolygon();
 
 public slots:
     void animate();
@@ -73,6 +75,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 private:
     QVector<CubicBezierCurve> curves;
+    bool isControlPolygonVisible;
 };
 //! [0]
 
