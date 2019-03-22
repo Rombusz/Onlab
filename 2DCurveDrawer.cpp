@@ -53,9 +53,21 @@
 
 #include <QPainter>
 #include <QTimer>
+#include <iostream>
+
+static void gestureEventHandler(QGestureEvent* event){
+
+    if (QGesture *swipe = event->gesture(Qt::SwipeGesture))
+        std::cout << "Swipe gesture" << std::endl;
+    else if (QGesture *pan = event->gesture(Qt::PanGesture))
+        std::cout << "Pan gesture" << std::endl;
+    if (QGesture *pinch = event->gesture(Qt::PinchGesture))
+        std::cout << "Pinch gesture" << std::endl;
+
+}
 
 CurveDrawer2D::CurveDrawer2D(QWidget *parent)
-    :QOpenGLWidget(parent),curves(),isControlPolygonVisible(false)
+    :QOpenGLWidget(parent),curves(),isControlPolygonVisible(false),offset(0,0)
 {
     setMinimumSize(500,500);
     setAutoFillBackground(false);
@@ -101,5 +113,42 @@ void CurveDrawer2D::showControlPolygon(){
 void CurveDrawer2D::hideControlPolygon(){
 
     this->isControlPolygonVisible = false;
+
+}
+
+void CurveDrawer2D::mouseMoveEvent(QMouseEvent *event){
+
+    if(event->buttons() & Qt::LeftButton){
+
+        QPoint currentPos = event->pos();
+        QPoint offsetPoint = currentPos - prevClickPos;
+        QVector2D offsetVector(offsetPoint.x(),offsetPoint.y());
+
+        this->offset += offsetVector;
+
+        for(auto& curve : this->curves){
+
+            curve.setTranslate(this->offset);
+
+        }
+
+        std::cout << this->offset.x() << " " << this->offset.y() << std::endl;
+
+        prevClickPos = event->pos();
+        event->accept();
+        this->update();
+
+    }
+
+}
+
+void CurveDrawer2D::mousePressEvent(QMouseEvent *event){
+
+    if(event->buttons() & Qt::LeftButton){
+
+        isClicked = true;
+        prevClickPos = event->pos();
+
+    }
 
 }

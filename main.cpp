@@ -13,6 +13,12 @@ int main(int argc, char *argv[])
  //   QSurfaceFormat::setDefaultFormat(fmt);
 
     Window window;
+
+    window.grabGesture(Qt::PanGesture);
+    window.grabGesture(Qt::PinchGesture);
+    window.grabGesture(Qt::SwipeGesture);
+
+
     window.show();
     return app.exec();
 }

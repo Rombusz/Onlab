@@ -1,6 +1,7 @@
 #include "window.h"
 
 #include <stdio.h>
+#include <iostream>
 #include <string.h>
 #include <math.h>
 #define NANOSVG_IMPLEMENTATION
@@ -23,6 +24,9 @@ Window::Window()
     toolLayout.addWidget(&checkBox);
     mainLayout.addLayout(&toolLayout);
     setLayout(&mainLayout);
+    setAttribute(Qt::WA_AcceptTouchEvents);
+    setMouseTracking(true);
+
 
     connect(&checkBox, SIGNAL(clicked(bool)),this, SLOT(onCheckBoxStateChange(bool)));
 
@@ -36,7 +40,7 @@ void Window::onFileButtonClick(){
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open SVG"), "/home/", tr("SVG Files (*.svg)"));
 
     struct NSVGimage* image;
-    image = nsvgParseFromFile("/home/ferenc/Documents/camera.svg", "px", 96);
+    image = nsvgParseFromFile(fileName.toUtf8().data(), "px", 96);
 
     if(image == nullptr)
         throw std::exception();
@@ -71,5 +75,6 @@ void Window::onCheckBoxStateChange(bool checkBoxState){
     this->curveDrawer.update();
 
 }
+
 
 //! [0]

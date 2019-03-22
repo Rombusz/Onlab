@@ -55,6 +55,7 @@
 #include <QVector>
 #include <QSharedPointer>
 #include "cubicbeziercurve.h"
+#include <QGesture>
 
 //! [0]
 
@@ -73,9 +74,15 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+
 private:
     QVector<CubicBezierCurve> curves;
     bool isControlPolygonVisible;
+    QVector2D offset;
+    QPoint prevClickPos;
+    bool isClicked;
 };
 //! [0]
 

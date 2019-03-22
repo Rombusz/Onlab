@@ -2,19 +2,19 @@
 #include <iostream>
 
 CubicBezierCurve::CubicBezierCurve()
-: startPoint(), controlPoint1(), controlPoint2(),endPoint()
+: startPoint(), controlPoint1(), controlPoint2(),endPoint(), offset(0,0),scale(1)
 {
 
 }
 
 CubicBezierCurve::CubicBezierCurve(const QPointF& startPoint, const QPointF& endPoint)
-: startPoint(startPoint), controlPoint1(), controlPoint2(),endPoint(endPoint)
+: startPoint(startPoint), controlPoint1(), controlPoint2(),endPoint(endPoint), offset(0,0),scale(1)
 {
 
 }
 
 CubicBezierCurve::CubicBezierCurve(const QPointF& startPoint,const QPointF& controlPoint1,const QPointF& controlPoint2, const QPointF& endPoint)
-: startPoint(startPoint), controlPoint1(controlPoint1), controlPoint2(controlPoint2),endPoint(endPoint)
+: startPoint(startPoint), controlPoint1(controlPoint1), controlPoint2(controlPoint2),endPoint(endPoint), offset(0,0),scale(1)
 {
 
 }
@@ -63,6 +63,13 @@ void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const Q
     painter.setPen(cpolypen);
     painter.setBrush(background);
 
+    QTransform transform;
+
+    transform.scale(this->scale, this->scale);
+    transform.translate( this->offset.x(), this->offset.y() );
+
+    painter.setTransform(transform);
+
     qfloat16 parameter = increment;
 
     if(showControlPolygon){
@@ -97,3 +104,14 @@ void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const Q
     painter.restore();
 
 };
+
+void CubicBezierCurve::setTranslate(const QVector2D& offsetVector){
+
+    this->offset = offsetVector;
+
+}
+void CubicBezierCurve::setScale(const qfloat16& uniformscale){
+
+    this->scale = uniformscale;
+
+}

@@ -82,6 +82,7 @@ private slots:
     void onFileButtonClick();
     void onCheckBoxStateChange(bool state);
 
+
 };
 //! [0]
 

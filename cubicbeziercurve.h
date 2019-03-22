@@ -7,6 +7,7 @@
 #include <QPaintEvent>
 #include <QFloat16>
 #include <QtMath>
+#include <QMatrix4x4>
 
 class CubicBezierCurve final
 {
@@ -16,6 +17,8 @@ class CubicBezierCurve final
         QPointF controlPoint1;
         QPointF controlPoint2;
         QPointF endPoint;
+        QVector2D offset;
+        qfloat16 scale;
 
     public:
         CubicBezierCurve();
@@ -29,6 +32,8 @@ class CubicBezierCurve final
 
         void draw(QPainter& painter, const QPaintEvent& event, const QPen& pen,const QPen& cpolypen, const QBrush& background, int numberOfSamples, bool showControlPolygon) const;
         QPointF calculatePoint(const qfloat16& param) const;
+        void setTranslate(const QVector2D& offsetVector);
+        void setScale(const qfloat16& uniformscale);
         virtual ~CubicBezierCurve(){}
 
 };
