@@ -55,7 +55,6 @@
 #include <QVector>
 #include <QSharedPointer>
 #include "cubicbeziercurve.h"
-#include <QGesture>
 
 //! [0]
 
@@ -76,6 +75,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     QVector<CubicBezierCurve> curves;
@@ -83,6 +83,8 @@ private:
     QVector2D offset;
     QPoint prevClickPos;
     bool isClicked;
+    qfloat16 scaleFactor;
+
 };
 //! [0]
 

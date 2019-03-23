@@ -2,24 +2,24 @@
 #include <iostream>
 
 CubicBezierCurve::CubicBezierCurve()
-: startPoint(), controlPoint1(), controlPoint2(),endPoint(), offset(0,0),scale(1)
+: startPoint(), controlPoint1(), controlPoint2(),endPoint(), offset(0,0,0),scale(1)
 {
 
 }
 
-CubicBezierCurve::CubicBezierCurve(const QPointF& startPoint, const QPointF& endPoint)
-: startPoint(startPoint), controlPoint1(), controlPoint2(),endPoint(endPoint), offset(0,0),scale(1)
+CubicBezierCurve::CubicBezierCurve(const QVector3D& startPoint, const QVector3D& endPoint)
+: startPoint(startPoint), controlPoint1(), controlPoint2(),endPoint(endPoint), offset(0,0,0),scale(1)
 {
 
 }
 
-CubicBezierCurve::CubicBezierCurve(const QPointF& startPoint,const QPointF& controlPoint1,const QPointF& controlPoint2, const QPointF& endPoint)
-: startPoint(startPoint), controlPoint1(controlPoint1), controlPoint2(controlPoint2),endPoint(endPoint), offset(0,0),scale(1)
+CubicBezierCurve::CubicBezierCurve(const QVector3D& startPoint,const QVector3D& controlPoint1,const QVector3D& controlPoint2, const QVector3D& endPoint)
+: startPoint(startPoint), controlPoint1(controlPoint1), controlPoint2(controlPoint2),endPoint(endPoint), offset(0,0,0),scale(1)
 {
 
 }
 
-QPointF CubicBezierCurve::calculatePoint(const qfloat16& t) const{
+QVector3D CubicBezierCurve::calculatePoint(const qfloat16& t) const{
 
     qfloat16 b30 = pow(1-t,3);
     qfloat16 b31 = 3*pow(1-t,2)*t;
@@ -30,24 +30,24 @@ QPointF CubicBezierCurve::calculatePoint(const qfloat16& t) const{
 
 }
 
-void CubicBezierCurve::setStartPoint(const QPointF& startPoint){
+void CubicBezierCurve::setStartPoint(const QVector3D& startPoint){
 
     this->startPoint = startPoint;
 
 }
 
-void CubicBezierCurve::setEndPoint(const QPointF& endPoint){
+void CubicBezierCurve::setEndPoint(const QVector3D& endPoint){
 
     this->endPoint = endPoint;
 
 }
 
-void CubicBezierCurve::setControlPoint1(const QPointF& controlPoint){
+void CubicBezierCurve::setControlPoint1(const QVector3D& controlPoint){
 
     this->controlPoint1 = controlPoint;
 
 }
-void CubicBezierCurve::setControlPoint2(const QPointF& controlPoint){
+void CubicBezierCurve::setControlPoint2(const QVector3D& controlPoint){
 
     this->controlPoint2 = controlPoint;
 
@@ -74,32 +74,32 @@ void CubicBezierCurve::draw(QPainter& painter, const QPaintEvent& event, const Q
 
     if(showControlPolygon){
 
-        painter.drawLine(startPoint,controlPoint1);
-        painter.drawLine(controlPoint1,controlPoint2);
-        painter.drawLine(controlPoint2,endPoint);
+        painter.drawLine(startPoint.toPointF(),controlPoint1.toPointF());
+        painter.drawLine(controlPoint1.toPointF(),controlPoint2.toPointF());
+        painter.drawLine(controlPoint2.toPointF(),endPoint.toPointF());
 
-        painter.drawEllipse(controlPoint1,4.0,4.0);
-        painter.drawEllipse(controlPoint2,4.0,4.0);
+        painter.drawEllipse(controlPoint1.toPointF(),4.0,4.0);
+        painter.drawEllipse(controlPoint2.toPointF(),4.0,4.0);
 
     }
-    painter.drawEllipse(startPoint,4.0,4.0);
-    painter.drawEllipse(endPoint,4.0,4.0);
+    painter.drawEllipse(startPoint.toPointF(),4.0,4.0);
+    painter.drawEllipse(endPoint.toPointF(),4.0,4.0);
 
     painter.setPen(pen);
 
     for(;parameter<1.0f ;parameter+=increment ){
 
-        QPointF segmentStart = this->calculatePoint(parameter-increment);
-        QPointF segmentEnd = this->calculatePoint(parameter);
+        QVector3D segmentStart = this->calculatePoint(parameter-increment);
+        QVector3D segmentEnd = this->calculatePoint(parameter);
 
-        painter.drawLine(segmentStart,segmentEnd);
+        painter.drawLine(segmentStart.toPointF(),segmentEnd.toPointF());
 
     }
 
-    QPointF segmentStart = this->calculatePoint(parameter-increment);
-    QPointF segmentEnd = this->calculatePoint(1.0f);
+    QVector3D segmentStart = this->calculatePoint(parameter-increment);
+    QVector3D segmentEnd = this->calculatePoint(1.0f);
 
-    painter.drawLine(segmentStart,segmentEnd);
+    painter.drawLine(segmentStart.toPointF(),segmentEnd.toPointF());
 
     painter.restore();
 

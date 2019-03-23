@@ -52,7 +52,8 @@
 #define WINDOW_H
 
 #include <QWidget>
-#include <2DCurveDrawer.h>
+#include <CurveDrawer2D.h>
+#include <curvedrawer3d.h>
 #include <QGridLayout>
 #include <QBoxLayout>
 #include <QLabel>
@@ -71,11 +72,13 @@ public:
 
 private:
 
-    CurveDrawer2D curveDrawer;
+    CurveDrawer2D curveDrawer2D;
+    CurveDrawer3D curveDrawer3D;
     QPushButton openFileButton;
     QCheckBox checkBox;
     QBoxLayout mainLayout;
     QBoxLayout toolLayout;
+    QBoxLayout canvasLayout;
     QLabel checkBoxLabel;
 
 private slots:
