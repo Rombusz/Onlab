@@ -48,50 +48,36 @@
 **
 ****************************************************************************/
 
-#ifndef GLWIDGET_H
-#define GLWIDGET_H
+#include "widget.h"
+#include "helper.h"
 
-#include <QOpenGLWidget>
-#include <QVector>
-#include <QSharedPointer>
-#include "cubicbeziercurve.h"
-#include "beziercurvenetwork.h"
+#include <QPainter>
+#include <QTimer>
 
 //! [0]
-
-class CurveDrawer2D : public QOpenGLWidget
+Widget::Widget(Helper *helper, QWidget *parent)
+    : QWidget(parent), helper(helper)
 {
-    Q_OBJECT
-
-public:
-    CurveDrawer2D(QWidget *parent);
-    void addCurve(const CubicBezierCurve&);
-    void addNetwork(const BezierCurveNetwork&);
-    void showControlPolygon();
-    void hideControlPolygon();
-    QVector2D getSelectedPoint() const;
-    bool isPointSelected() const;
-
-public slots:
-    void animate();
-
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
-
-private:
-    QVector<CubicBezierCurve> curves;
-    bool isControlPolygonVisible;
-    QVector2D offset;
-    QVector2D selectedSegmentEndpoint;
-    bool isEndpointSelected;
-    QPoint prevClickPos;
-    bool isClicked;
-    qfloat16 scaleFactor;
-
-};
+    elapsed = 0;
+    setFixedSize(200, 200);
+}
 //! [0]
 
-#endif
+//! [1]
+void Widget::animate()
+{
+    elapsed = (elapsed + qobject_cast<QTimer*>(sender())->interval()) % 1000;
+    update();
+}
+//! [1]
+
+//! [2]
+void Widget::paintEvent(QPaintEvent *event)
+{
+    QPainter painter;
+    painter.begin(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    helper->paint(&painter, event, elapsed);
+    painter.end();
+}
+//! [2]

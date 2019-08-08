@@ -3,30 +3,37 @@
 void CurveDrawer3D::addCurve(const CubicBezierCurve& curve){
 
     this->curves.push_back(curve);
-    color[0] = 1;
-    color[1] = 1;
-    color[2] = 1;
+
+}
+
+void CurveDrawer3D::addCurves(const QVector<CubicBezierCurve>& curves){
+
+    this->curves.append(curves);
 
 }
 
 void CurveDrawer3D::init(){
 
+    color[0] = 1;
+    color[1] = 1;
+    color[2] = 1;
     glMaterialfv(GL_FRONT, GL_AMBIENT, color);
 
 }
 
 void CurveDrawer3D::draw(){
 
-    glBegin(GL_LINE_STRIP);
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glDisable(GL_LIGHTING);
-    glColor3f(1, 1, 1);
-    glNormal3f(0,0,1);
-
     for(auto& curve : this->curves){
 
         int sampleNumber = 10;
         float stepSize = 1.0f/sampleNumber;
+
+        glBegin(GL_LINE_STRIP);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDisable(GL_LIGHTING);
+        glColor3f(1, 1, 1);
+        glNormal3f(-this->camera()->viewDirection().x,-this->camera()->viewDirection().y,-this->camera()->viewDirection().z);
+
 
         for (int i = 0; i <= sampleNumber ;i++) {
 
@@ -36,8 +43,10 @@ void CurveDrawer3D::draw(){
 
         }
 
+        glEnd();
+
     }
 
-    glEnd();
+
 
 }

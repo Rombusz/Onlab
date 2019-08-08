@@ -31,6 +31,11 @@ class CubicBezierCurve final
         void setControlPoint1(const QVector3D& controlPoint);
         void setControlPoint2(const QVector3D& controlPoint);
 
+        const QVector3D& getStartPoint() const;
+        const QVector3D& getEndPoint() const;
+        const QVector3D& getControlPoint1() const;
+        const QVector3D& getControlPoint2() const;
+
         void draw(QPainter& painter, const QPaintEvent& event, const QPen& pen,const QPen& cpolypen, const QBrush& background, int numberOfSamples, bool showControlPolygon) const;
         QVector3D calculatePoint(const qfloat16& param) const;
         void setTranslate(const QVector2D& offsetVector);

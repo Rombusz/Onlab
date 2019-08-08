@@ -115,3 +115,24 @@ void CubicBezierCurve::setScale(const qfloat16& uniformscale){
     this->scale = uniformscale;
 
 }
+
+const QVector3D& CubicBezierCurve::getStartPoint() const{
+
+    return this->startPoint;
+
+}
+const QVector3D& CubicBezierCurve::getEndPoint() const{
+
+    return this->endPoint;
+
+}
+const QVector3D& CubicBezierCurve::getControlPoint1() const{
+
+    return this->controlPoint1;
+
+}
+const QVector3D& CubicBezierCurve::getControlPoint2() const{
+
+    return this->controlPoint2;
+
+}

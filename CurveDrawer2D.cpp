@@ -56,7 +56,7 @@
 #include <iostream>
 
 CurveDrawer2D::CurveDrawer2D(QWidget *parent)
-    :QOpenGLWidget(parent),curves(),isControlPolygonVisible(false),offset(0,0),scaleFactor(1)
+    :QOpenGLWidget(parent),curves(),isControlPolygonVisible(false),offset(0,0),scaleFactor(1),selectedSegmentEndpoint(0,0),isEndpointSelected(false)
 {
     setAutoFillBackground(false);
 }
@@ -78,19 +78,33 @@ void CurveDrawer2D::paintEvent(QPaintEvent *event)
 
     painter.fillRect(event->rect(),brush);
 
-    for(CubicBezierCurve& curve : this->curves){
+    for(const CubicBezierCurve& curve : this->curves){
 
         curve.draw(painter, *event, linepen, cpolygonpen, brush, 15, isControlPolygonVisible);
 
     }
 
+    QBrush redBrush(Qt::red);
+    QPen redPen(Qt::red);
+
+    painter.setBrush(redBrush);
+    painter.setPen(redPen);
+
+
+    if(isEndpointSelected){
+
+        QTransform transform;
+
+        transform = transform.scale(scaleFactor, scaleFactor) * transform.translate(offset.x(), offset.y());
+
+        QVector3D segmentPoint(selectedSegmentEndpoint.x(), selectedSegmentEndpoint.y(), 1);
+
+        segmentPoint = transform*segmentPoint;
+
+        painter.drawEllipse(segmentPoint.toPointF(),4.0f,4.0f);
+
+    }
     painter.end();
-}
-
-void CurveDrawer2D::addCurve(const CubicBezierCurve& curve){
-
-    this->curves.push_back(curve);
-
 }
 
 void CurveDrawer2D::showControlPolygon(){
@@ -146,6 +160,18 @@ void CurveDrawer2D::wheelEvent(QWheelEvent *event){
 
 }
 
+QVector2D CurveDrawer2D::getSelectedPoint() const {
+
+    return this->selectedSegmentEndpoint;
+
+}
+
+bool CurveDrawer2D::isPointSelected() const{
+
+    return this->isEndpointSelected;
+
+}
+
 
 void CurveDrawer2D::mousePressEvent(QMouseEvent *event){
 
@@ -155,5 +181,56 @@ void CurveDrawer2D::mousePressEvent(QMouseEvent *event){
         prevClickPos = event->pos()/this->scaleFactor;
 
     }
+
+    if(event->buttons() & Qt::RightButton){
+
+        QVector3D selectedPoint(event->x(),event->y(), 1);
+        QVector3D closestPoint = curves.last().getEndPoint();
+        QTransform transform;
+
+        transform = transform.scale(1/scaleFactor, 1/scaleFactor) * transform.translate(-offset.x(), -offset.y());
+        std::cout << "Scale and offset: " << scaleFactor << " " << offset.x() << " " << offset.y() << std::endl;
+        selectedPoint=transform*selectedPoint;
+
+        float closestDistance = (closestPoint - selectedPoint).length();
+
+        for(const auto& curve : curves){
+
+            QVector3D endPoint(curve.getEndPoint().x(), curve.getEndPoint().y(), 1);
+            QVector3D startPoint(curve.getStartPoint().x(), curve.getStartPoint().y(), 1);
+
+            float endPointdistance = (endPoint-selectedPoint).length();
+            float startPointdistance = (startPoint-selectedPoint).length();
+
+            if( endPointdistance <= startPointdistance && endPointdistance < closestDistance ){
+                closestPoint = endPoint;
+                closestDistance = endPointdistance;
+            }
+            else if(startPointdistance < endPointdistance && startPointdistance < closestDistance ){
+                closestPoint = startPoint;
+                closestDistance = startPointdistance;
+            }
+        }
+
+        std::cout << "Curve point in transformed space:" << closestPoint.x() << " " << closestPoint.y() << std::endl;
+
+        if(closestDistance < 4.0f){
+
+            this->selectedSegmentEndpoint = QVector2D(closestPoint.x(), closestPoint.y());
+            isEndpointSelected = true;
+
+        }
+
+
+        event->accept();
+        this->update();
+
+    }
+
+}
+
+void CurveDrawer2D::addNetwork(const BezierCurveNetwork& network){
+
+    this->curves.append(network.getCurvesCopy());
 
 }

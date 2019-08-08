@@ -48,50 +48,49 @@
 **
 ****************************************************************************/
 
-#ifndef GLWIDGET_H
-#define GLWIDGET_H
+#include "helper.h"
 
-#include <QOpenGLWidget>
-#include <QVector>
-#include <QSharedPointer>
-#include "cubicbeziercurve.h"
-#include "beziercurvenetwork.h"
+#include <QPainter>
+#include <QPaintEvent>
+#include <QWidget>
 
-//! [0]
-
-class CurveDrawer2D : public QOpenGLWidget
+Helper::Helper()
 {
-    Q_OBJECT
+    QLinearGradient gradient(QPointF(50, -20), QPointF(80, 20));
+    gradient.setColorAt(0.0, Qt::white);
+    gradient.setColorAt(1.0, QColor(0xa6, 0xce, 0x39));
 
-public:
-    CurveDrawer2D(QWidget *parent);
-    void addCurve(const CubicBezierCurve&);
-    void addNetwork(const BezierCurveNetwork&);
-    void showControlPolygon();
-    void hideControlPolygon();
-    QVector2D getSelectedPoint() const;
-    bool isPointSelected() const;
+    background = QBrush(QColor(64, 32, 64));
+    circleBrush = QBrush(gradient);
+    circlePen = QPen(Qt::black);
+    circlePen.setWidth(1);
+    textPen = QPen(Qt::white);
+    textFont.setPixelSize(50);
+}
 
-public slots:
-    void animate();
+void Helper::paint(QPainter *painter, QPaintEvent *event, int elapsed)
+{
+    painter->fillRect(event->rect(), background);
+    painter->translate(100, 100);
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
+    painter->save();
+    painter->setBrush(circleBrush);
+    painter->setPen(circlePen);
+    painter->rotate(elapsed * 0.030);
 
-private:
-    QVector<CubicBezierCurve> curves;
-    bool isControlPolygonVisible;
-    QVector2D offset;
-    QVector2D selectedSegmentEndpoint;
-    bool isEndpointSelected;
-    QPoint prevClickPos;
-    bool isClicked;
-    qfloat16 scaleFactor;
+    qreal r = elapsed / 1000.0;
+    int n = 30;
+    for (int i = 0; i < n; ++i) {
+        painter->rotate(30);
+        qreal factor = (i + r) / n;
+        qreal radius = 0 + 120.0 * factor;
+        qreal circleRadius = 1 + factor * 20;
+        painter->drawEllipse(QRectF(radius, -circleRadius,
+                                    circleRadius * 2, circleRadius * 2));
+    }
+    painter->restore();
 
-};
-//! [0]
-
-#endif
+    painter->setPen(textPen);
+    painter->setFont(textFont);
+    painter->drawText(QRect(-50, -50, 100, 100), Qt::AlignCenter, QStringLiteral("Qt"));
+}

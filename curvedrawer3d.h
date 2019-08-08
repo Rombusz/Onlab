@@ -14,6 +14,7 @@ private:
 
 public:
     void addCurve(const CubicBezierCurve&);
+    void addCurves(const QVector<CubicBezierCurve>& curves);
     virtual void init();
     virtual void draw();
 

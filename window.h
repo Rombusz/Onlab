@@ -60,7 +60,10 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QSlider>
 #include <QCheckBox>
+#include "beziercurvenetwork.h"
+#include "solver.h"
 
 //! [0]
 class Window : public QWidget
@@ -80,10 +83,20 @@ private:
     QBoxLayout toolLayout;
     QBoxLayout canvasLayout;
     QLabel checkBoxLabel;
+    QSlider sliderLambda;
+    QSlider sliderZ;
+    Solver solver;
+    QLabel sliderLambdaLabel;
+    QLabel sliderZLabel;
 
 private slots:
     void onFileButtonClick();
     void onCheckBoxStateChange(bool state);
+    void updateLabelLambda(int number);
+    void updateLabelZLabel(int number);
+
+protected:
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 
 };

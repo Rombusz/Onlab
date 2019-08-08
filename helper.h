@@ -48,49 +48,29 @@
 **
 ****************************************************************************/
 
-#ifndef GLWIDGET_H
-#define GLWIDGET_H
+#ifndef HELPER_H
+#define HELPER_H
 
-#include <QOpenGLWidget>
-#include <QVector>
-#include <QSharedPointer>
-#include "cubicbeziercurve.h"
-#include "beziercurvenetwork.h"
+#include <QBrush>
+#include <QFont>
+#include <QPen>
+#include <QWidget>
 
 //! [0]
-
-class CurveDrawer2D : public QOpenGLWidget
+class Helper
 {
-    Q_OBJECT
+public:
+    Helper();
 
 public:
-    CurveDrawer2D(QWidget *parent);
-    void addCurve(const CubicBezierCurve&);
-    void addNetwork(const BezierCurveNetwork&);
-    void showControlPolygon();
-    void hideControlPolygon();
-    QVector2D getSelectedPoint() const;
-    bool isPointSelected() const;
-
-public slots:
-    void animate();
-
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
+    void paint(QPainter *painter, QPaintEvent *event, int elapsed);
 
 private:
-    QVector<CubicBezierCurve> curves;
-    bool isControlPolygonVisible;
-    QVector2D offset;
-    QVector2D selectedSegmentEndpoint;
-    bool isEndpointSelected;
-    QPoint prevClickPos;
-    bool isClicked;
-    qfloat16 scaleFactor;
-
+    QBrush background;
+    QBrush circleBrush;
+    QFont textFont;
+    QPen circlePen;
+    QPen textPen;
 };
 //! [0]
 
