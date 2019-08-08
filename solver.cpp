@@ -230,19 +230,17 @@ void Solver::CreateBaselineReconstruction(const QVector3D& point){
     params.segments = &curvesToSolve;
     params.selectedBaselinePoint = point;
 
-    const gsl_multiroot_fsolver_type * T = gsl_multiroot_fsolver_hybrid;
-    const gsl_multimin_fminimizer_type * mT = gsl_multimin_fminimizer_nmsimplex2;
+    const gsl_multiroot_fsolver_type * T = gsl_multiroot_fsolver_hybrids;
 
     const size_t n = curvesToSolve.size();
-    //const size_t curve_variable_number = n*4*3;
-    const size_t curve_variable_number = 1;
+    const size_t curve_variable_number = n*4*3;
     const size_t equation_size = curve_variable_number+1;
     gsl_vector *x = gsl_vector_alloc (equation_size);
     s = gsl_multiroot_fsolver_alloc (T, equation_size);
 
     gsl_multiroot_function f = {Solver::BaselineReconstructionFunction, equation_size, &params};
     std::cout << "solver started" << std::endl;
-   /* for(int i=0; i < curve_variable_number; i+=12){
+    for(int i=0; i < curve_variable_number; i+=12){
 
         CubicBezierCurve currentCurve = curvesToSolve.at(i/12);
 
@@ -250,7 +248,7 @@ void Solver::CreateBaselineReconstruction(const QVector3D& point){
 
             gsl_vector_set (x, i,   currentCurve.getStartPoint().x());
             gsl_vector_set (x, i+1, currentCurve.getStartPoint().y());
-            gsl_vector_set (x, i+2, 100);
+            gsl_vector_set (x, i+2, currentCurve.getStartPoint().z());
             gsl_vector_set (x, i+9, currentCurve.getEndPoint().x());
             gsl_vector_set (x, i+10,currentCurve.getEndPoint().y());
             gsl_vector_set (x, i+11,currentCurve.getEndPoint().z());
@@ -263,7 +261,7 @@ void Solver::CreateBaselineReconstruction(const QVector3D& point){
             gsl_vector_set (x, i+2, currentCurve.getStartPoint().z());
             gsl_vector_set (x, i+9, currentCurve.getEndPoint().x());
             gsl_vector_set (x, i+10,currentCurve.getEndPoint().y());
-            gsl_vector_set (x, i+11,1000);
+            gsl_vector_set (x, i+11,currentCurve.getEndPoint().z());
 
         }
 
@@ -275,7 +273,7 @@ void Solver::CreateBaselineReconstruction(const QVector3D& point){
         gsl_vector_set (x, i+8, currentCurve.getControlPoint2().z());
 
     }
-*/
+
     gsl_vector_set (x, 0 , initialGuess.at(0));
     gsl_vector_set (x, equation_size-1 ,initialGuess.at(1)/1000.0f );
 
@@ -293,8 +291,8 @@ void Solver::CreateBaselineReconstruction(const QVector3D& point){
         print_state(iter,s);
 
         status = gsl_multiroot_test_residual (s->f, 1e-7);
-    }while(iter < 10 && status == GSL_CONTINUE);
-/*
+    }while(iter < 100 && status == GSL_CONTINUE);
+
     QVector<CubicBezierCurve> results;
 
     for(int i=0; i < curve_variable_number; i+=12){
@@ -310,7 +308,7 @@ void Solver::CreateBaselineReconstruction(const QVector3D& point){
     }
 
     network.ReplaceSegmentsAtPoint(point,results);
-*/
+
     gsl_multiroot_fsolver_free(s);
 
     std::cout << "solver finished" << std::endl;
