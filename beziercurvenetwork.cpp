@@ -20,7 +20,7 @@ QVector<CubicBezierCurve> BezierCurveNetwork::getSegmentsAtPoint(const QVector3D
 
 }
 
-QVector<CubicBezierCurve>& BezierCurveNetwork::getCurves(){
+const QVector<CubicBezierCurve>& BezierCurveNetwork::getCurves() const {
 
     return this->curves;
 

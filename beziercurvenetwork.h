@@ -21,7 +21,7 @@ class BezierCurveNetwork
 public:
     void addCurve(const CubicBezierCurve& curve);
     QVector<CubicBezierCurve> getSegmentsAtPoint(const QVector3D& point) const;
-    QVector<CubicBezierCurve>& getCurves();
+    const QVector<CubicBezierCurve>& getCurves() const;
     QVector<CubicBezierCurve> getCurvesCopy() const;
     void ReplaceSegmentsAtPoint(const QVector3D& point, const QVector<CubicBezierCurve>& curves);
 

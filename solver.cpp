@@ -10,6 +10,8 @@ Solver::Solver(){
 void Solver::setNetwork(const BezierCurveNetwork& net){
 
     this->network = net;
+    float diagonal = CalculateDiagonalLength(net);
+    this->sketchboundingboxdiagonalsquare = diagonal*diagonal;
 
 }
 
@@ -51,10 +53,10 @@ int Solver::BaselineReconstructionFunction(const gsl_vector * x, void *params, g
 
     float CorthoLambda = gsl_vector_get (x, x->size-1);
 
-    std::vector<float> gradAcc = EaccuracyGrad(*segments,BezierSegments3D);
-    std::vector<float> gradVar = EvariationGrad(*segments,BezierSegments3D);
-    std::vector<float> gradFore = EforeshorteningGrad(*segments,BezierSegments3D);
-    std::vector<float> gradCortho = CorthoGrad(BezierSegments3D);
+    std::vector<float> gradAcc = param->solver->EaccuracyGrad(*segments,BezierSegments3D);
+    std::vector<float> gradVar = param->solver->EvariationGrad(*segments,BezierSegments3D);
+    std::vector<float> gradFore = param->solver->EforeshorteningGrad(*segments,BezierSegments3D);
+    std::vector<float> gradCortho = param->solver->CorthoGrad(BezierSegments3D);
 /*
     for(int i=0;i< gradAcc.size();i++){
 
@@ -72,7 +74,7 @@ int Solver::BaselineReconstructionFunction(const gsl_vector * x, void *params, g
         gsl_vector_set(f,1, gradCortho.at(11));
     }
 
-    float c = Cortho(BezierSegments3D);
+    float c = param->solver->Cortho(BezierSegments3D);
 
     gsl_vector_set(f,f->size-1, c);
 
@@ -755,10 +757,46 @@ QVector3D Solver::Cparallel(const CubicBezierCurve& c1_original, CubicBezierCurv
 
 }
 
+//TODO:not precise make it more precise
+float Solver::CalculateDiagonalLength(const BezierCurveNetwork& net){
+
+    float minX,maxX;
+    float minY,maxY;
+
+    minX = net.getCurves()[0].getStartPoint().x();
+    maxX = net.getCurves()[0].getStartPoint().x();
+    minY = net.getCurves()[0].getStartPoint().y();
+    maxY = net.getCurves()[0].getStartPoint().y();
+
+    for(const auto& curve : net.getCurves())
+    {
+
+        std::vector<QVector3D> curvePoints;
+
+        int number_of_samples = 20;
+
+        for(int i = 0; i <= number_of_samples; i++)
+        {
+            curvePoints.push_back(curve.calculatePoint(((float)number_of_samples)/i));
+        }
+
+        for(auto points : curvePoints){
+
+            if(minX > points.x()) minX = points.x();
+            if(maxX < points.x()) maxX = points.x();
+            if(minY > points.y()) minY = points.y();
+            if(maxY > points.y()) maxY = points.y();
+
+        }
+        
+    }
+    
+    return QVector2D(maxX-minX,maxY-minY).length();
+
+}
+
 float Solver::Wd(float d){
 
-    float sketchboundingboxdiagonalsquare = 400.0f;
-
-    return std::exp(-d*d/(2*(sketchboundingboxdiagonalsquare)))+0.01;
+    return std::exp(-d*d/(2*(this->sketchboundingboxdiagonalsquare)))+0.01;
 
 }
